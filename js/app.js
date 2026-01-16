@@ -20,6 +20,7 @@ const filterBtns = document.querySelectorAll('.filter-btn')
 
 let transactions = []
 let currentFilter = 'all'
+let editingId =  null
 
 // ========================================
 // INICIALIZAÇÃO
@@ -138,7 +139,7 @@ function renderTransactions() {
     if (currentFilter === 'income') {
         filteredTransactions = transactions.filter(t => t.type === 'income')
     } else if (currentFilter === 'expense') {
-        filteredTransactions =transactions.filter(t => === 'expense')
+        filteredTransactions =transactions.filter(t => t.type === 'expense')
     }
 
     // se não tuver transações, mostra mensagem vazia
@@ -268,7 +269,33 @@ function deleteTransaction(id) {
 
 //editar transação 
 function editTransaction(id) {
-    alert('Função de editar será implementada no próximo passo!')
+    //encontra a transação  pelo id
+    const transaction = transaction .find(t => t.id === id)
+
+    if(!transaction) {
+        alert('Transação não encontrada!')
+        return
+    }
+    console.log('Editando transações:' , transaction)
+
+    // preenche o formulário com os dados 
+    descriptionInput.value = transaction.description
+    amountInput.value = transaction.amount
+    categoryInput.value = transaction.category
+    typeInput.value = transaction.type
+    dateInput.value = transaction.date
+
+    //muda o texto do botão
+    const submitBtn = transactionForm.querySelector('button[type="submit]')
+    submitBtn.textContent = 'Atualizar Transação'
+    submitBtn.style.background = '#f59e0b'
+
+    //guarda o ID que está sendo editado
+    editingId = id
+
+    // scroll suave até o formulario
+    transactionForm.scrollIntoView({ behavior: 'smooth'})
+    
 }
 
 // FUNÇÕES AUXILIARES
