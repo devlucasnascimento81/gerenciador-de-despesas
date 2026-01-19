@@ -5,9 +5,9 @@ const categoryInput = document.getElementById('category')
 const typeInput = document.getElementById('type')
 const dateInput = document.getElementById('date')
 
-const totalIncomeEl = document.getAnimations('totalIncome')
-const totalExpenseEl = document.getAnimations('totalExpense')
-const totalBalanceEl = document.getAnimations('totalBalance')
+const totalIncomeEl = document.getElementById('totalIncome')
+const totalExpenseEl = document.getElementById('totalExpense')
+const totalBalanceEl = document.getElementById('totalBalance')
 
 const transactionsList = document.getElementById('transactionsList')
 const emptyMessage = document.getElementById('emptyMessage')
@@ -85,56 +85,85 @@ function render() {
     renderBalance()
 }
 
-//ADICONAR TRANSAÇÃO
+//ADICIONAR/ATUALIZAR TRANSAÇÃO
+// ========================================
 function handleFormSubmit(event) {
     event.preventDefault()
-
-    // Pega valores do formulário
+    
     const description = descriptionInput.value.trim()
     const amount = parseFloat(amountInput.value)
     const category = categoryInput.value
     const type = typeInput.value
     const date = dateInput.value
-
-    //validação básica
+    
     if (!description || !amount || !category || !date) {
         alert('Preencha todos os campos!')
         return
     }
-
-    //Cria objetos da transação
-    const transaction = {
-        id: Date.now(), //ID unico baseado em timestamp
-        description,
-        amount,
-        category,
-        type,
-        date
+    
+    if (editingId !== null) {
+        updateTransaction(editingId, { description, amount, category, type, date })
+    } else {
+        addTransaction({ description, amount, category, type, date })
     }
+}
 
+function addTransaction(data) {
+    const transaction = {
+        id: Date.now(),
+        ...data
+    }
+    
     console.log('Nova transação:', transaction)
-
-    // Adiciona no array
+    
     transactions.push(transaction)
-
-    // Salva no localStorage
     saveTransactions()
-
-    // Atualiza a tela
     render()
+    resetForm()
+    
+    showNotification('Transação adicionada com sucesso!', 'success')
+}
 
-    // Limpa o formulário
+function updateTransaction(id, data) {
+    const index = transactions.findIndex(t => t.id === id)
+    
+    if (index === -1) {
+        alert('Transação não encontrada!')
+        return
+    }
+    
+    transactions[index] = {
+        id,
+        ...data
+    }
+    
+    console.log('Transação atualizada:', transactions[index])
+    
+    saveTransactions()
+    render()
+    resetForm()
+    
+    showNotification('Transação atualizada com sucesso!', 'success')
+}
+
+// Reseta o formulário para o estado inicial
+function resetForm() {
     transactionForm.reset()
     setTodayDate()
-
-    // Feedback visual (vamos adicionar depois)
-    console.log('Transação adicionada com sucesso!')
-
+    editingId = null
+    
+    // Volta o botão ao estado original
+    const submitBtn = transactionForm.querySelector('button[type="submit"]')
+    submitBtn.textContent = 'Adicionar Transação'
+    submitBtn.style.background = '' // Remove estilo inline (volta pro CSS)
 }
+    
+
+
 
 //RENDERIZAR TRANSAÇÕES
 function renderTransactions() {
-    let filterTransactions = transactions
+    let filteredTransactions = transactions
 
     if (currentFilter === 'income') {
         filteredTransactions = transactions.filter(t => t.type === 'income')
@@ -143,7 +172,7 @@ function renderTransactions() {
     }
 
     // se não tuver transações, mostra mensagem vazia
-    if (filteredTransactions.lenght === 0) {
+    if (filteredTransactions.length === 0) {
         emptyMessage.classList.remove('hidden')
         transactionsList.innerHTML = ''
         return
@@ -161,7 +190,7 @@ function renderTransactions() {
     })
 
     //cria html para cada transação 
-    sorted.forEach(transactions => {
+    sorted.forEach(transaction => {
         const li = createTransactionElement(transaction)
         transactionsList.appendChild(li)
     })
@@ -270,7 +299,7 @@ function deleteTransaction(id) {
 //editar transação 
 function editTransaction(id) {
     //encontra a transação  pelo id
-    const transaction = transaction .find(t => t.id === id)
+    const transaction = transactions .find(t => t.id === id)
 
     if(!transaction) {
         alert('Transação não encontrada!')
@@ -286,7 +315,7 @@ function editTransaction(id) {
     dateInput.value = transaction.date
 
     //muda o texto do botão
-    const submitBtn = transactionForm.querySelector('button[type="submit]')
+    const submitBtn = transactionForm.querySelector('button[type="submit"]')
     submitBtn.textContent = 'Atualizar Transação'
     submitBtn.style.background = '#f59e0b'
 
@@ -296,6 +325,28 @@ function editTransaction(id) {
     // scroll suave até o formulario
     transactionForm.scrollIntoView({ behavior: 'smooth'})
     
+}
+
+// NOTIFICAÇÕES
+function showNotification(message, type = 'success') {
+    // Remove notificação antiga se existir
+    const oldNotification = document.querySelector('.notification')
+    if (oldNotification) {
+        oldNotification.remove()
+    }
+    
+    // Cria nova notificação
+    const notification = document.createElement('div')
+    notification.className = `notification ${type}`
+    notification.textContent = message
+    
+    document.body.appendChild(notification)
+    
+    // Remove após 3 segundos
+    setTimeout(() => {
+        notification.classList.add('fade-out')
+        setTimeout(() => notification.remove(), 300)
+    }, 3000)
 }
 
 // FUNÇÕES AUXILIARES
