@@ -1,32 +1,36 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de despesas</title>
+    <title>Gerenciador de Despesas</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
+    
     <div class="container">
-
+        
+        <!-- Cabeçalho -->
         <header class="header">
             <h1>💰 Controle Financeiro</h1>
             <p>Gerencie suas receitas e despesas</p>
         </header>
 
+        <!-- Card de Balanço -->
         <section class="balance-card">
             <div class="balance-item">
                 <span class="balance-label">Receitas</span>
                 <span class="balance-value income" id="totalIncome">R$ 0,00</span>
             </div>
+            <div class="balance-item">
+                <span class="balance-label">Despesas</span>
+                <span class="balance-value expense" id="totalExpense">R$ 0,00</span>
+            </div>
             <div class="balance-item total">
                 <span class="balance-label">Balanço</span>
                 <span class="balance-value" id="totalBalance">R$ 0,00</span>
             </div>
-
         </section>
 
         <!-- Formulário -->
@@ -36,11 +40,23 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="description">Descrição</label>
-                        <input type="text" id="description" placeholder="Ex: Salário, Aluguel, Mercado..." required>
+                        <input 
+                            type="text" 
+                            id="description" 
+                            placeholder="Ex: Salário, Aluguel, Mercado..."
+                            required
+                        >
                     </div>
                     <div class="form-group">
                         <label for="amount">Valor (R$)</label>
-                        <input type="number" id="amount" placeholder="0.00" step="0.01" min="0.01" required>
+                        <input 
+                            type="number" 
+                            id="amount" 
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0.01"
+                            required
+                        >
                     </div>
                 </div>
 
@@ -65,42 +81,3 @@
                         <label for="type">Tipo</label>
                         <select id="type" required>
                             <option value="income">➕ Receita</option>
-                            <option value="expense">➖ Despesa</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="date">Data</label>
-                        <input type="date" id="date" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit">Adicionar Transação</button>
-            </form>
-        </section>
-        <!-- Filtros -->
-        <section class="filters">
-            <button class="filter-btn active" data-filter="all">Todas</button>
-            <button class="filter-btn" data-filter="income">Receitas</button>
-            <button class="filter-btn" data-filter="expense">Despesas</button>
-        </section>
-
-        <!-- Lista de Transações -->
-        <section class="transactions-section">
-            <h2>Histórico de Transações</h2>
-            <ul id="transactionsList" class="transactions-list">
-                <!-- Transações aparecerão aqui via JavaScript -->
-            </ul>
-            <p id="emptyMessage" class="empty-message">
-                Nenhuma transação cadastrada ainda. Adicione sua primeira transação acima!
-            </p>
-        </section>
-
-    </div>
-
-
-    </div>
-    <script src="js/app.js"></script>
-
-</body>
-
-</html>
